@@ -6,11 +6,13 @@ import {
   employeeGETbyId,
   employeePOST,
   employeePUTbyId,
+  positionGET,
 } from '../controllers/employeeControllers';
 
 const router = Router();
 
 router.get('/department', departmentGET);
+router.get('/position', positionGET);
 
 router.get('/:id', employeeGETbyId);
 router.put('/:id', employeePUTbyId);
