@@ -76,3 +76,13 @@ export const departmentGET = async (req: Request, res: Response) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+export const positionGET = async (req: Request, res: Response) => {
+  try {
+    const position = await Employee.distinct('position');
+    if (!position) res.status(404).json({ error: 'Position not found' });
+    else res.json(position);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+};
