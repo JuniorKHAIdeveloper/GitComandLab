@@ -66,3 +66,13 @@ export const employeeDELETEbyId = async (req: Request, res: Response) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+export const departmentGET = async (req: Request, res: Response) => {
+  try {
+    const department = await Employee.distinct('department');
+    if (!department) res.status(404).json({ error: 'Department not found' });
+    else res.json(department);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+};
