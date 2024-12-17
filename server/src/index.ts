@@ -4,6 +4,7 @@ import express from 'express';
 import connectDB from './config/db';
 import { logger } from './middleware/logger';
 import employeeRoutes from './routes/employeeRoutes';
+import errorHandler from './middleware/errorHandler';
 
 dotenv.config({ path: '.env.dev' });
 
@@ -17,6 +18,8 @@ app.use(logger);
 connectDB();
 
 app.use('/api/employee', employeeRoutes);
+
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
