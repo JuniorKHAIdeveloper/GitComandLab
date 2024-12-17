@@ -4,9 +4,22 @@ const Employee = require('../models/employee');
 export const employeeGET = async (req: Request, res: Response) => {
   try {
     const query = req.query;
-    const employees = await Employee.find(query);
-    if (employees.length === 0) res.status(404).json({ error: 'No employees found' });
-    else res.json(employees);
+
+    const sortBy = req.query.sortBy as string;
+    const sortOrder = parseInt(req.query.sortOrder as string);
+
+    delete query.sortBy;
+    delete query.sortOrder;
+
+    if (sortBy && sortOrder) {
+      const employees = await Employee.find(query)?.sort({ [sortBy]: sortOrder });
+      if (employees.length === 0) res.status(404).json({ error: 'No employees found' });
+      else res.json(employees);
+    } else {
+      const employees = await Employee.find(query);
+      if (employees.length === 0) res.status(404).json({ error: 'No employees found' });
+      else res.json(employees);
+    }
   } catch (err: any) {
     res.status(500).json({ error: err.message });
   }
