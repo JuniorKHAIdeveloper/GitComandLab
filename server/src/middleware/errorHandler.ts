@@ -5,11 +5,7 @@ const errorHandler = (err: Error, req: Request, res: Response, next: NextFunctio
   switch (err.message) {
     case 'No employees found':
     case 'Employee not found':
-      res.status(404).json({ message: err.message });
-      break;
     case 'Position not found':
-      res.status(404).json({ message: err.message });
-      break;
     case 'Department not found':
       res.status(404).json({ message: err.message });
       break;
