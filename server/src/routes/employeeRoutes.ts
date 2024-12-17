@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import {
+  departmentGET,
   employeeDELETEbyId,
   employeeGET,
   employeeGETbyId,
@@ -8,6 +9,8 @@ import {
 } from '../controllers/employeeControllers';
 
 const router = Router();
+
+router.get('/department', departmentGET);
 
 router.get('/:id', employeeGETbyId);
 router.put('/:id', employeePUTbyId);
