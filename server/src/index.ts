@@ -16,7 +16,7 @@ app.use(logger);
 
 connectDB();
 
-app.use('/api/employee', employeeRoutes);
+app.use('/api/employees', employeeRoutes);
 
 app.use(errorHandler);
 
