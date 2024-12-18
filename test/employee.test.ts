@@ -43,4 +43,10 @@ describe('Employee API', () => {
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty('salary', updatedData.salary);
   });
+
+  it('should delete an employee by ID', async () => {
+    const response = await request(app).delete(`/api/employees/${employeeId}`);
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveProperty('message', 'Employee deleted');
+  });
 });
