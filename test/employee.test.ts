@@ -28,4 +28,10 @@ describe('Employee API', () => {
     expect(response.body).toBeInstanceOf(Array);
     expect(response.body.length).toBeGreaterThan(0);
   });
+
+  it('should get an employee by ID', async () => {
+    const response = await request(app).get(`/api/employees/${employeeId}`);
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveProperty('name', testEmployee.name);
+  });
 });
