@@ -49,4 +49,16 @@ describe('Employee API', () => {
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty('message', 'Employee deleted');
   });
+
+  it('should get all unique departments', async () => {
+    const response = await request(app).get('/api/employees/department');
+    expect(response.status).toBe(200);
+    expect(response.body).toBeInstanceOf(Array);
+  });
+
+  it('should get all unique positions', async () => {
+    const response = await request(app).get('/api/employees/position');
+    expect(response.status).toBe(200);
+    expect(response.body).toBeInstanceOf(Array);
+  });
 });
