@@ -21,4 +21,11 @@ describe('Employee API', () => {
     expect(response.body.name).toBe(testEmployee.name);
     employeeId = response.body._id;
   });
+
+  it('should get all employees', async () => {
+    const response = await request(app).get('/api/employees');
+    expect(response.status).toBe(200);
+    expect(response.body).toBeInstanceOf(Array);
+    expect(response.body.length).toBeGreaterThan(0);
+  });
 });
