@@ -103,7 +103,24 @@
 - **Валідація**: Перевірка вхідних даних за допомогою бібліотеки .
 - **Тестування**: Покриття тестами ключових функцій.
 
+
 ## Test 
 
 ### Test for patch1
+
+## Test
+
+To run the server:
+
+```bash
+cd server
+yarn dev
+```
+
+To run the tests:
+
+```bash
+cd test
+yarn test
+```
 
