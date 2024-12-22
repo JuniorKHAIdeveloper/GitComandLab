@@ -1,24 +1,25 @@
 import { Router } from 'express';
-import {
-  departmentGET,
-  employeeDELETEbyId,
-  employeeGET,
-  employeeGETbyId,
-  employeePOST,
-  employeePUTbyId,
-  positionGET,
-} from '../controllers/employeeControllers';
+import EmployeeController from '../controllers/employeeControllers';
 
-const router = Router();
+class EmployeeRoutes {
+  public router: Router;
 
-router.get('/department', departmentGET);
-router.get('/position', positionGET);
+  constructor() {
+    this.router = Router();
+    this.initializeRoutes();
+  }
 
-router.get('/:id', employeeGETbyId);
-router.put('/:id', employeePUTbyId);
-router.delete('/:id', employeeDELETEbyId);
+  private initializeRoutes() {
+    this.router.get('/departments', EmployeeController.getDepartments);
+    this.router.get('/positions', EmployeeController.getPositions);
 
-router.get('/', employeeGET);
-router.post('/', employeePOST);
+    this.router.get('/:id', EmployeeController.getEmployeeById);
+    this.router.put('/:id', EmployeeController.updateEmployeeById);
+    this.router.delete('/:id', EmployeeController.deleteEmployeeById);
 
-export default router;
+    this.router.get('/', EmployeeController.getEmployees);
+    this.router.post('/', EmployeeController.createEmployee);
+  }
+}
+
+export default new EmployeeRoutes().router;

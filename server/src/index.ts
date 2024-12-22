@@ -1,30 +1,59 @@
 import cors from 'cors';
 import dotenv from 'dotenv';
-import express from 'express';
+import express, { Application } from 'express';
 import connectDB from './config/db';
+import errorHandler from './middleware/errorHandler';
 import { logger } from './middleware/logger';
 import employeeRoutes from './routes/employeeRoutes';
-import errorHandler from './middleware/errorHandler';
 
 dotenv.config({ path: '.env.dev' });
 
-const app = express();
+class Server {
+  private app: Application;
+  private port: string | number;
 
-app.use(cors());
-app.use(express.json());
-app.use(logger);
+  constructor() {
+    this.app = express();
+    this.port = process.env.PORT || 5000;
 
-connectDB();
+    this.initializeMiddlewares();
+    this.initializeDatabase();
+    this.initializeRoutes();
+    this.initializeErrorHandling();
+  }
 
-app.use('/api/employees', employeeRoutes);
+  private initializeMiddlewares() {
+    this.app.use(cors());
+    this.app.use(express.json());
+    this.app.use(logger);
+  }
 
-app.use(errorHandler);
+  private initializeDatabase() {
+    connectDB();
+  }
 
-export default app;
+  private initializeRoutes() {
+    this.app.use('/api/employees', employeeRoutes);
+  }
+
+  private initializeErrorHandling() {
+    this.app.use(errorHandler);
+  }
+
+  public start() {
+    this.app.listen(this.port, () => {
+      console.log(`Server is running on http://localhost:${this.port}`);
+    });
+  }
+
+  public getApp(): Application {
+    return this.app;
+  }
+}
 
 if (require.main === module) {
-  const PORT = process.env.PORT || 5000;
-  app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
-  });
+  const server = new Server();
+  server.start();
 }
+
+export default new Server().getApp();
