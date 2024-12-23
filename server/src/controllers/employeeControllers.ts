@@ -1,11 +1,14 @@
 import { NextFunction, Request, Response } from 'express';
-import EmployeeService from '../models/employeeModel';
+import EmployeeModel, { IEmployee } from '../models/employeeModel';
+import BaseController from './BaseController';
 
-class EmployeeController {
-  modelService: EmployeeService;
-
+class EmployeeController extends BaseController<IEmployee> {
   constructor() {
-    this.modelService = new EmployeeService();
+    super(new EmployeeModel());
+
+    this.getAll = this.getAll.bind(this);
+    this.getDepartments = this.getDepartments.bind(this);
+    this.getPositions = this.getPositions.bind(this);
   }
 
   async getAll(req: Request, res: Response, next: NextFunction) {
@@ -29,54 +32,6 @@ class EmployeeController {
         next(new Error('No employees found'));
       } else {
         res.json(employees);
-      }
-    } catch (err: any) {
-      next(err);
-    }
-  }
-
-  async getById(req: Request, res: Response, next: NextFunction) {
-    try {
-      const employee = await this.modelService.findById(req.params.id);
-      if (!employee) {
-        next(new Error('Employee not found'));
-      } else {
-        res.json(employee);
-      }
-    } catch (err: any) {
-      next(err);
-    }
-  }
-
-  async create(req: Request, res: Response, next: NextFunction) {
-    try {
-      const newEmployee = await this.modelService.create(req.body);
-      res.status(201).json(newEmployee);
-    } catch (err: any) {
-      next(err);
-    }
-  }
-
-  async updateById(req: Request, res: Response, next: NextFunction) {
-    try {
-      const updatedEmployee = await this.modelService.updateById(req.params.id, req.body);
-      if (!updatedEmployee) {
-        next(new Error('Employee not found'));
-      } else {
-        res.json(updatedEmployee);
-      }
-    } catch (err: any) {
-      next(err);
-    }
-  }
-
-  async deleteById(req: Request, res: Response, next: NextFunction) {
-    try {
-      const deletedEmployee = await this.modelService.deleteById(req.params.id);
-      if (!deletedEmployee) {
-        next(new Error('Employee not found'));
-      } else {
-        res.json({ message: 'Employee deleted' });
       }
     } catch (err: any) {
       next(err);
