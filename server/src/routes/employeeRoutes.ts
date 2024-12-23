@@ -13,12 +13,12 @@ class EmployeeRoutes {
     this.router.get('/departments', EmployeeController.getDepartments);
     this.router.get('/positions', EmployeeController.getPositions);
 
-    this.router.get('/:id', EmployeeController.getEmployeeById);
-    this.router.put('/:id', EmployeeController.updateEmployeeById);
-    this.router.delete('/:id', EmployeeController.deleteEmployeeById);
+    this.router.get('/:id', EmployeeController.getById);
+    this.router.put('/:id', EmployeeController.updateById);
+    this.router.delete('/:id', EmployeeController.deleteById);
 
-    this.router.get('/', EmployeeController.getEmployees);
-    this.router.post('/', EmployeeController.createEmployee);
+    this.router.get('/', EmployeeController.getAll);
+    this.router.post('/', EmployeeController.create);
   }
 }
 
