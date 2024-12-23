@@ -1,8 +1,14 @@
 import { NextFunction, Request, Response } from 'express';
-import Employee from '../models/employee';
+import EmployeeService from '../models/employeeModel';
 
 class EmployeeController {
-  async getEmployees(req: Request, res: Response, next: NextFunction) {
+  modelService: EmployeeService;
+
+  constructor() {
+    this.modelService = new EmployeeService();
+  }
+
+  async getAll(req: Request, res: Response, next: NextFunction) {
     try {
       const query = { ...req.query };
       const sortBy = query.sortBy as string;
@@ -13,10 +19,10 @@ class EmployeeController {
 
       let employees;
       if (sortBy && sortOrder) {
-        employees = await Employee.findEmployees(query);
+        employees = await this.modelService.find(query);
         employees.sort((a, b) => (a as any)[sortBy] - (b as any)[sortBy] * sortOrder);
       } else {
-        employees = await Employee.findEmployees(query);
+        employees = await this.modelService.find(query);
       }
 
       if (employees.length === 0) {
@@ -29,18 +35,9 @@ class EmployeeController {
     }
   }
 
-  async createEmployee(req: Request, res: Response, next: NextFunction) {
+  async getById(req: Request, res: Response, next: NextFunction) {
     try {
-      const savedEmployee = await Employee.createEmployee(req.body);
-      res.status(201).json(savedEmployee);
-    } catch (err: any) {
-      next(err);
-    }
-  }
-
-  async getEmployeeById(req: Request, res: Response, next: NextFunction) {
-    try {
-      const employee = await Employee.findEmployeeById(req.params.id);
+      const employee = await this.modelService.findById(req.params.id);
       if (!employee) {
         next(new Error('Employee not found'));
       } else {
@@ -51,9 +48,18 @@ class EmployeeController {
     }
   }
 
-  async updateEmployeeById(req: Request, res: Response, next: NextFunction) {
+  async create(req: Request, res: Response, next: NextFunction) {
     try {
-      const updatedEmployee = await Employee.updateEmployeeById(req.params.id, req.body);
+      const newEmployee = await this.modelService.create(req.body);
+      res.status(201).json(newEmployee);
+    } catch (err: any) {
+      next(err);
+    }
+  }
+
+  async updateById(req: Request, res: Response, next: NextFunction) {
+    try {
+      const updatedEmployee = await this.modelService.updateById(req.params.id, req.body);
       if (!updatedEmployee) {
         next(new Error('Employee not found'));
       } else {
@@ -64,9 +70,9 @@ class EmployeeController {
     }
   }
 
-  async deleteEmployeeById(req: Request, res: Response, next: NextFunction) {
+  async deleteById(req: Request, res: Response, next: NextFunction) {
     try {
-      const deletedEmployee = await Employee.deleteEmployeeById(req.params.id);
+      const deletedEmployee = await this.modelService.deleteById(req.params.id);
       if (!deletedEmployee) {
         next(new Error('Employee not found'));
       } else {
@@ -79,7 +85,7 @@ class EmployeeController {
 
   async getDepartments(req: Request, res: Response, next: NextFunction) {
     try {
-      const departments = await Employee.getDistinct('department');
+      const departments = await this.modelService.getDistinct('department');
       if (!departments.length) {
         next(new Error('Departments not found'));
       } else {
@@ -92,7 +98,7 @@ class EmployeeController {
 
   async getPositions(req: Request, res: Response, next: NextFunction) {
     try {
-      const positions = await Employee.getDistinct('position');
+      const positions = await this.modelService.getDistinct('position');
       if (!positions.length) {
         next(new Error('Positions not found'));
       } else {
