@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import EmployeeModel, { IEmployee } from '../models/employeeModel';
-import BaseController from './BaseController';
+import BaseController from './baseController';
 
 class EmployeeController extends BaseController<IEmployee> {
   constructor() {
