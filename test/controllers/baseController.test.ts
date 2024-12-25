@@ -1,52 +1,79 @@
 import { Request, Response } from 'express';
 import { BaseModel } from '../../server/src/models/baseModel';
 import BaseController from '../../server/src/controllers/baseController';
-import { Document, Schema, model } from 'mongoose';
-
-interface ITestModel extends Document {
-  name: string;
-}
-
-const testSchema = new Schema({
-  name: { type: String, required: true },
-});
-const TestMongooseModel = model<ITestModel>('TestController', testSchema);
-const testModel = new BaseModel<ITestModel>(TestMongooseModel);
-const testController = new BaseController(testModel);
-
-const mockRequest = () => {
-  const req = {} as Request;
-  req.query = {};
-  req.params = {};
-  req.body = {};
-  return req;
-};
-
-const mockResponse = () => {
-  const res = {} as Response;
-  res.status = jest.fn().mockReturnValue(res);
-  res.json = jest.fn().mockReturnValue(res);
-  return res;
-};
+import { jest } from '@jest/globals';
 
 describe('BaseController', () => {
-  beforeAll(async () => {
-    await testModel.create({ name: 'Test 1' });
+  const mockModel = {
+    create: jest.fn(),
+    find: jest.fn(),
+    findById: jest.fn(),
+    findByIdAndUpdate: jest.fn(),
+    findByIdAndDelete: jest.fn(),
+  };
+  const baseModel = new BaseModel(mockModel as any);
+  const baseController = new BaseController(baseModel);
+
+  const mockRequest = (): Partial<Request> => ({
+    query: {},
+    params: {},
+    body: {},
   });
 
-  it('should return all items', async () => {
+  const mockResponse = (): Partial<Response> => {
+    const res: Partial<Response> = {};
+    res.status = jest.fn().mockReturnValue(res);
+    res.json = jest.fn().mockReturnValue(res);
+    return res;
+  };
+
+  it('should get all items', async () => {
+    mockModel.find.mockResolvedValue([{ _id: '1', name: 'Item 1' }, { _id: '2', name: 'Item 2' }]);
     const req = mockRequest();
     const res = mockResponse();
-    await testController.getAll(req, res, jest.fn());
+    await baseController.getAll(req as Request, res as Response, jest.fn());
     expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith(expect.any(Array));
+    expect(res.json).toHaveBeenCalledWith([{ _id: '1', name: 'Item 1' }, { _id: '2', name: 'Item 2' }]);
   });
 
   it('should create an item', async () => {
+    mockModel.create.mockResolvedValue({ _id: '123', name: 'New Item' });
     const req = mockRequest();
-    req.body = { name: 'Test Item' };
+    req.body = { name: 'New Item' };
     const res = mockResponse();
-    await testController.create(req, res, jest.fn());
+    await baseController.create(req as Request, res as Response, jest.fn());
     expect(res.status).toHaveBeenCalledWith(201);
+    expect(res.json).toHaveBeenCalledWith({ _id: '123', name: 'New Item' });
+  });
+
+  it('should get an item by ID', async () => {
+    mockModel.findById.mockResolvedValue({ _id: '123', name: 'Found Item' });
+    const req = mockRequest();
+    req.params = { id: '123' };
+    const res = mockResponse();
+    await baseController.getById(req as Request, res as Response, jest.fn());
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith({ _id: '123', name: 'Found Item' });
+  });
+
+  it('should update an item by ID', async () => {
+    mockModel.findByIdAndUpdate.mockResolvedValue({ _id: '123', name: 'Updated Item' });
+    const req = mockRequest();
+    req.params = { id: '123' };
+    req.body = { name: 'Updated Item' };
+    const res = mockResponse();
+    await baseController.updateById(req as Request, res as Response, jest.fn());
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith({ _id: '123', name: 'Updated Item' });
+  });
+
+  it('should delete an item by ID', async () => {
+    mockModel.findByIdAndDelete.mockResolvedValue({ _id: '123', name: 'Deleted Item' });
+    const req = mockRequest();
+    req.params = { id: '123' };
+    const res = mockResponse();
+    await baseController.deleteById(req as Request, res as Response, jest.fn());
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith({ _id: '123', name: 'Deleted Item' });
   });
 });
