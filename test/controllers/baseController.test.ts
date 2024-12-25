@@ -1,9 +1,5 @@
-import { Request, Response } from 'express';
-import { BaseModel } from '../../server/src/models/baseModel';
-import BaseController from '../../server/src/controllers/baseController';
-import { jest } from '@jest/globals';
-
 describe('BaseController - Tests with Mocked Classes', () => {
+  // Моковані методи моделі для тестування контролера
   const mockCreate = jest.fn();
   const mockFind = jest.fn();
   const mockFindById = jest.fn();
@@ -30,6 +26,8 @@ describe('BaseController - Tests with Mocked Classes', () => {
   };
 
   it('should get all items', async () => {
+    // Метод, що повертає всі елементи
+    // Тестові дані: Масив об’єктів
     mockFind.mockResolvedValue([
       { _id: '1', name: 'Item 1' },
       { _id: '2', name: 'Item 2' },
@@ -42,9 +40,11 @@ describe('BaseController - Tests with Mocked Classes', () => {
   });
 
   it('should create an item', async () => {
+    // Метод, що створює елемент
+    // Тестові дані: Об’єкт з полями, які передаються для створення
     mockCreate.mockResolvedValue({ _id: '123', name: 'New Item' });
     const req = mockRequest();
-    req.body = {};
+    req.body = { name: 'New Item' };
     const res = mockResponse();
     await baseController.create(req as Request, res as Response, jest.fn());
     expect(res.status).toHaveBeenCalled();
@@ -52,6 +52,8 @@ describe('BaseController - Tests with Mocked Classes', () => {
   });
 
   it('should get an item by ID', async () => {
+    // Метод, що знаходить елемент за ID
+    // Тестові дані: Ідентифікатор елемента
     mockFindById.mockResolvedValue({ _id: '123', name: 'Found Item' });
     const req = mockRequest();
     req.params = { id: '123' };
@@ -62,10 +64,12 @@ describe('BaseController - Tests with Mocked Classes', () => {
   });
 
   it('should update an item by ID', async () => {
+    // Метод, що оновлює елемент за ID
+    // Тестові дані: Ідентифікатор елемента та нові дані для оновлення
     mockFindByIdAndUpdate.mockResolvedValue({ _id: '123', name: 'Updated Item' });
     const req = mockRequest();
     req.params = { id: '123' };
-    req.body = {};
+    req.body = { name: 'Updated Item' };
     const res = mockResponse();
     await baseController.updateById(req as Request, res as Response, jest.fn());
     expect(res.status).toHaveBeenCalled();
@@ -73,6 +77,8 @@ describe('BaseController - Tests with Mocked Classes', () => {
   });
 
   it('should delete an item by ID', async () => {
+    // Метод, що видаляє елемент за ID
+    // Тестові дані: Ідентифікатор елемента для видалення
     mockFindByIdAndDelete.mockResolvedValue({ _id: '123', name: 'Deleted Item' });
     const req = mockRequest();
     req.params = { id: '123' };

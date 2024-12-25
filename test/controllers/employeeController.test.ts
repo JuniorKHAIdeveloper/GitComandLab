@@ -1,7 +1,3 @@
-import EmployeeController from '../../server/src/controllers/employeeControllers';
-import { Request, Response } from 'express';
-import { jest } from '@jest/globals';
-
 describe('EmployeeController - Tests with Mocked Classes', () => {
   const mockGetAll = jest.fn();
   const mockGetDepartments = jest.fn();
@@ -26,6 +22,9 @@ describe('EmployeeController - Tests with Mocked Classes', () => {
   };
 
   it('should return all employees', async () => {
+    // Метод, що повертає всіх співробітників
+    // Тестові дані: Масив співробітників з полями, такими як ім’я, посада, департамент
+    mockGetAll.mockResolvedValue([{ _id: '1', name: 'John Doe', position: 'Engineer' }]);
     const req = mockRequest();
     const res = mockResponse();
     await EmployeeController.getAll(req, res, jest.fn());
@@ -34,6 +33,9 @@ describe('EmployeeController - Tests with Mocked Classes', () => {
   });
 
   it('should return distinct departments', async () => {
+    // Метод, що повертає унікальні департаменти
+    // Тестові дані: Масив департаментів
+    mockGetDepartments.mockResolvedValue(['Development', 'HR']);
     const req = mockRequest();
     const res = mockResponse();
     await EmployeeController.getDepartments(req, res, jest.fn());
