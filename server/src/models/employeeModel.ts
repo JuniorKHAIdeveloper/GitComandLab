@@ -1,7 +1,8 @@
-import mongoose, { Document, Model, Schema } from 'mongoose';
+
+import mongoose, { Model, Schema } from 'mongoose';
 import { BaseModel, IBaseModel } from './baseModel';
 
-export interface IEmployee extends IBaseModel, Document {
+export interface IEmployee extends IBaseModel {
   id: number;
   name: string;
   position: string;

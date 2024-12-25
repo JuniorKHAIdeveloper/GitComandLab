@@ -1,6 +1,9 @@
 module.exports = {
-  testEnvironment: "node",
+  setupFilesAfterEnv: ['./setup.ts'],
+  testEnvironment: 'node',
+  moduleFileExtensions: ['ts', 'js'],
   transform: {
-    "^.+.tsx?$": ["ts-jest",{}],
+    '^.+\\.ts$': 'ts-jest',
   },
+  testTimeout: 60000
 };
