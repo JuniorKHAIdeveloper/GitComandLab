@@ -1,64 +1,58 @@
-import mongoose from 'mongoose';
-import { Document, Schema } from 'mongoose';
+import { jest } from '@jest/globals';
 import { BaseModel } from '../../server/src/models/baseModel';
+import { Model } from 'mongoose';
 
-interface ITestModel extends Document {
-  _id: string;
-  name: string;
-}
+describe('BaseModel with Mocks', () => {
+  const mockModel = {
+    create: jest.fn(),
+    findById: jest.fn(),
+    find: jest.fn(),
+    findByIdAndUpdate: jest.fn(),
+    findByIdAndDelete: jest.fn(),
+    distinct: jest.fn(),
+  };
 
-const testSchema = new Schema({
-  _id: { type: String, required: true },
-  name: { type: String, required: true },
-});
-
-const TestMongooseModel = mongoose.model<ITestModel>('Test', testSchema);
-
-describe('BaseModel', () => {
-  const baseModel = new BaseModel<ITestModel>(TestMongooseModel);
-
-  beforeAll(async () => {
-    await TestMongooseModel.deleteMany({});
-  });
+  const baseModel = new BaseModel(mockModel as unknown as Model<any>);
 
   it('should create a document', async () => {
-    const doc = await baseModel.create({ _id: new mongoose.Types.ObjectId().toString(), name: 'Test Document' });
-    expect(doc).toHaveProperty('_id');
-    expect(doc.name).toBe('Test Document');
+    mockModel.create.mockResolvedValue({ _id: '123', name: 'Test Document' });
+    const doc = await baseModel.create({ name: 'Test Document' });
+    expect(doc).toEqual({ _id: '123', name: 'Test Document' });
+    expect(mockModel.create).toHaveBeenCalledWith({ name: 'Test Document' });
   });
 
   it('should find a document by ID', async () => {
-    const doc = await baseModel.create({ _id: new mongoose.Types.ObjectId().toString(), name: 'Another Test' });
-    const foundDoc = await baseModel.findById(doc._id.toString());
-    expect(foundDoc).not.toBeNull();
-    expect(foundDoc!.name).toBe('Another Test');
+    mockModel.findById.mockResolvedValue({ _id: '123', name: 'Found Document' });
+    const doc = await baseModel.findById('123');
+    expect(doc).toEqual({ _id: '123', name: 'Found Document' });
+    expect(mockModel.findById).toHaveBeenCalledWith('123');
   });
 
   it('should return all documents', async () => {
+    mockModel.find.mockResolvedValue([{ _id: '1', name: 'Doc 1' }, { _id: '2', name: 'Doc 2' }]);
     const docs = await baseModel.find({});
-    expect(docs.length).toBeGreaterThan(0);
+    expect(docs).toEqual([{ _id: '1', name: 'Doc 1' }, { _id: '2', name: 'Doc 2' }]);
+    expect(mockModel.find).toHaveBeenCalledWith({});
   });
 
   it('should update a document by ID', async () => {
-    const doc = await baseModel.create({ _id: new mongoose.Types.ObjectId().toString(), name: 'To Update' });
-    const updatedDoc = await baseModel.updateById(doc._id.toString(), { name: 'Updated Name' });
-    expect(updatedDoc).not.toBeNull();
-    expect(updatedDoc!.name).toBe('Updated Name');
+    mockModel.findByIdAndUpdate.mockResolvedValue({ _id: '123', name: 'Updated Name' });
+    const updatedDoc = await baseModel.updateById('123', { name: 'Updated Name' });
+    expect(updatedDoc).toEqual({ _id: '123', name: 'Updated Name' });
+    expect(mockModel.findByIdAndUpdate).toHaveBeenCalledWith('123', { name: 'Updated Name' }, { new: true });
   });
 
   it('should delete a document by ID', async () => {
-    const doc = await baseModel.create({ _id: new mongoose.Types.ObjectId().toString(), name: 'To Delete' });
-    const deletedDoc = await baseModel.deleteById(doc._id.toString());
-    expect(deletedDoc).not.toBeNull();
-    const foundDoc = await baseModel.findById(doc._id.toString());
-    expect(foundDoc).toBeNull();
+    mockModel.findByIdAndDelete.mockResolvedValue({ _id: '123', name: 'Deleted Document' });
+    const deletedDoc = await baseModel.deleteById('123');
+    expect(deletedDoc).toEqual({ _id: '123', name: 'Deleted Document' });
+    expect(mockModel.findByIdAndDelete).toHaveBeenCalledWith('123');
   });
 
   it('should return distinct values', async () => {
-    await baseModel.create({ _id: new mongoose.Types.ObjectId().toString(), name: 'Value 1' });
-    await baseModel.create({ _id: new mongoose.Types.ObjectId().toString(), name: 'Value 2' });
-    const distinct = await baseModel.getDistinct('name');
-    expect(distinct).toContain('Value 1');
-    expect(distinct).toContain('Value 2');
+    mockModel.distinct.mockResolvedValue(['Value 1', 'Value 2']);
+    const distinctValues = await baseModel.getDistinct('name');
+    expect(distinctValues).toEqual(['Value 1', 'Value 2']);
+    expect(mockModel.distinct).toHaveBeenCalledWith('name');
   });
 });
